@@ -31,18 +31,11 @@ type Client struct {
 	// TODO
 	// Export ExportService
 	// Email EmailService
-	// Messaging    MessagingService
 	// Subscription SubscriptionService
 	// Templates    TemplatesService
 
-	Users UsersEndpoint
-}
-
-type UsersEndpoint interface {
-	Track(ctx context.Context, r *UsersTrackRequest) (*Response, error)
-	Delete(ctx context.Context, r *UsersDeleteRequest) (*Response, error)
-	Identify(ctx context.Context, r *UsersIdentifyRequest) (*Response, error)
-	CreateAlias(ctx context.Context, r *UsersCreateAliasRequest) (*Response, error)
+	Messaging MessagingEndpoint
+	Users     UsersEndpoint
 }
 
 // NewClient sets up a new Trustpilot client.
@@ -60,7 +53,7 @@ func NewClient(opts ...ClientOption) (*Client, error) {
 	}
 
 	c.Users = &UsersService{client: c}
-	// TODO add more services.
+	c.Messaging = &MessagingService{client: c}
 
 	return c, nil
 }
@@ -236,3 +229,7 @@ func Int64(v int64) *int64 { return &v }
 // String is a helper routine that allocates a new string value
 // to store v and returns a pointer to it.
 func String(v string) *string { return &v }
+
+// Float64 is a helper routine that allocates a new float64 value
+// to store v and returns a pointer to it.
+func Float64(v float64) *float64 { return &v }
