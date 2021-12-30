@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"net/http/httputil"
 	"net/url"
 	"strings"
 	"time"
@@ -137,11 +136,11 @@ func (c *Client) newRequest(method string, path string, body interface{}) (*http
 
 func (c *Client) do(ctx context.Context, req *http.Request, v interface{}) error {
 	// TODO remove
-	reqDump, err := httputil.DumpRequest(req, true)
-	if err != nil {
-		panic(err)
-	}
-	fmt.Printf("%s\n", reqDump)
+	// reqDump, err := httputil.DumpRequest(req, true)
+	// if err != nil {
+	// 	panic(err)
+	// }
+	// fmt.Printf("%s\n", reqDump)
 
 	resp, err := c.httpClient.Do(req.WithContext(ctx))
 	if err != nil {
@@ -150,11 +149,11 @@ func (c *Client) do(ctx context.Context, req *http.Request, v interface{}) error
 	defer resp.Body.Close()
 
 	// TODO remove
-	respDump, err := httputil.DumpResponse(resp, true)
-	if err != nil {
-		panic(err)
-	}
-	fmt.Printf("%s\n", respDump)
+	// respDump, err := httputil.DumpResponse(resp, true)
+	// if err != nil {
+	// 	panic(err)
+	// }
+	// fmt.Printf("%s\n", respDump)
 
 	if err := parseError(resp); err != nil {
 		return err
@@ -194,7 +193,7 @@ func parseError(resp *http.Response) error {
 
 func (r *ErrorResponse) Error() string {
 	b := strings.Builder{}
-	b.WriteString(fmt.Sprint(r.ErrorCode))
+	b.WriteString(fmt.Sprintf("%d: ", r.ErrorCode))
 	b.WriteString(r.Message)
 	if len(r.Errors) != 0 {
 		b.WriteString(": ")
@@ -212,6 +211,7 @@ type ErrorResponse struct {
 type Response struct {
 	Message string  `json:"message,omitempty"`
 	SendID  string  `json:"send_id,omitempty"`
+	Deleted int     `json:"deleted,omitempty"`
 	Errors  []Error `json:"errors,omitempty"` // Minor errors.
 }
 
