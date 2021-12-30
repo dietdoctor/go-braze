@@ -16,8 +16,7 @@ const (
 )
 
 var (
-	// TODO uncomment
-	// _ UsersEndpoint = (*UsersService)(nil)
+	_ UsersEndpoint = (*UsersService)(nil)
 
 	AttributeSubscribeOptedIn      AttributeSubscribe = "opted_in"
 	AttributeSubscribeUnsubscribed AttributeSubscribe = "unsubscribed"
@@ -44,7 +43,11 @@ type UsersTrackRequest struct {
 	Purchases  []*UserPurchase   `json:"purchases,omitempty"`
 }
 
-type UsersDeleteRequest struct{}
+type UsersDeleteRequest struct {
+	ExternalIDs []string     `json:"external_ids,omitempty"`
+	UserAliases []*UserAlias `json:"user_aliases,omitempty"`
+	BrazeIDs    []string     `json:"braze_ids,omitempty"`
+}
 
 type UsersIdentifyRequest struct{}
 
@@ -206,7 +209,17 @@ func (s *UsersService) Track(ctx context.Context, r *UsersTrackRequest) (*Respon
 }
 
 func (s *UsersService) Delete(ctx context.Context, r *UsersDeleteRequest) (*Response, error) {
-	panic(errors.New("not implemented"))
+	req, err := s.client.newRequest(http.MethodPost, usersDeletePath, r)
+	if err != nil {
+		return nil, err
+	}
+
+	var res Response
+	if err := s.client.do(ctx, req, &res); err != nil {
+		return nil, err
+	}
+
+	return &res, nil
 }
 
 func (s *UsersService) Identify(ctx context.Context, r *UsersIdentifyRequest) (*Response, error) {
