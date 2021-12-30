@@ -28,6 +28,13 @@ var (
 	AttributeGenderPreferNotToSay  AttributeGender    = "P"
 )
 
+type UsersEndpoint interface {
+	Track(ctx context.Context, r *UsersTrackRequest) (*Response, error)
+	Delete(ctx context.Context, r *UsersDeleteRequest) (*Response, error)
+	Identify(ctx context.Context, r *UsersIdentifyRequest) (*Response, error)
+	CreateAlias(ctx context.Context, r *UsersCreateAliasRequest) (*Response, error)
+}
+
 type (
 	AttributeSubscribe string
 	AttributeGender    string
