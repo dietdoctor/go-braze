@@ -38,7 +38,7 @@ type Client struct {
 	Users     UsersEndpoint
 }
 
-// NewClient sets up a new Trustpilot client.
+// NewClient sets up a new Braze client.
 func NewClient(opts ...ClientOption) (*Client, error) {
 	baseURL, _ := url.Parse(defaultBaseURL)
 

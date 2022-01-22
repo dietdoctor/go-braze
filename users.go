@@ -199,7 +199,40 @@ type UserEvent struct {
 }
 
 // TODO
-type UserPurchase struct{}
+type UserPurchase struct {
+	// One of "external_id" or "user_alias" or "braze_id" is required
+	ExternalID *string    `json:"external_id,omitempty"`
+	UserAlias  *UserAlias `json:"user_alias,omitempty"`
+	BrazeID    *string    `json:"braze_id,omitempty"`
+	AppID      *string    `json:"app_id,omitempty"`
+
+	// ProductID required
+	ProductID string `json:"product_id"`
+	//ISO 4217 Alphabetic Currency Code required
+	Currency string `json:"currency"`
+	// Price required
+	Price float64 `json:"price"`
+	// Quantity is optional, defaults to 1, must be <= 100 -- currently, Braze treats a quantity _X_ as _X_ separate purchases with quantity 1
+	Quantity int `json:"quantity,omitempty"`
+	// Datetime as string in ISO 8601 or in `yyyy-MM-dd'T'HH:mm:ss:SSSZ` format). Required.
+	Time string `json:"time"`
+
+	// https://www.braze.com/docs/api/objects_filters/event_object/#event-properties-object
+	Properties map[string]interface{} `json:"properties,omitempty"`
+
+	// Setting this flag to true will put the API in "Update Only" mode.
+	// When using a "user_alias", "Update Only" mode is always true.
+	UpdateExistingOnly *bool `json:"update_existing_only,omitempty"`
+}
+
+func (up *UserPurchase) SetQuantity(q int) error {
+	if q <= 100 {
+		up.Quantity = q
+		return nil
+	} else {
+		return errors.New("quantity out of range")
+	}
+}
 
 func (s *UsersService) Track(ctx context.Context, r *UsersTrackRequest) (*Response, error) {
 	req, err := s.client.newRequest(http.MethodPost, usersTrackPath, r)
