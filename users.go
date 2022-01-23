@@ -198,7 +198,7 @@ type UserEvent struct {
 	UpdateExistingOnly *bool `json:"update_existing_only,omitempty"`
 }
 
-// TODO
+// https://www.braze.com/docs/api/objects_filters/purchase_object/
 type UserPurchase struct {
 	// One of "external_id" or "user_alias" or "braze_id" is required
 	ExternalID *string    `json:"external_id,omitempty"`
