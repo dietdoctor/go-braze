@@ -34,11 +34,12 @@ type Client struct {
 	// Subscription SubscriptionService
 	// Templates    TemplatesService
 
-	Messaging MessagingEndpoint
-	Users     UsersEndpoint
+	Messaging        MessagingEndpoint
+	Users            UsersEndpoint
+	PreferenceCenter PreferenceCenterEndpoint
 }
 
-// NewClient sets up a new Trustpilot client.
+// NewClient sets up a new Braze client.
 func NewClient(opts ...ClientOption) (*Client, error) {
 	baseURL, _ := url.Parse(defaultBaseURL)
 
@@ -54,6 +55,7 @@ func NewClient(opts ...ClientOption) (*Client, error) {
 
 	c.Users = &UsersService{client: c}
 	c.Messaging = &MessagingService{client: c}
+	c.PreferenceCenter = &PreferenceCenterService{client: c}
 
 	return c, nil
 }
