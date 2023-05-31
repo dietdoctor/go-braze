@@ -47,7 +47,7 @@ func (s *PreferenceCenterService) CreateURL(ctx context.Context, r *PreferenceCe
 
 	path := fmt.Sprintf("/preference_center/v1/%s/url/%s", r.PreferenceCenterID, r.UserID)
 
-	req, err := s.client.newRequest(http.MethodPost, path, r)
+	req, err := s.client.http.newRequest(http.MethodPost, path, r)
 	if err != nil {
 		return nil, err
 	}
@@ -56,7 +56,7 @@ func (s *PreferenceCenterService) CreateURL(ctx context.Context, r *PreferenceCe
 		URL string `json:"preference_center_url"`
 	}{}
 
-	if err := s.client.do(ctx, req, &resp); err != nil {
+	if err := s.client.http.do(ctx, req, &resp); err != nil {
 		return nil, err
 	}
 

@@ -39,13 +39,13 @@ type MessagingService struct {
 }
 
 func (s *MessagingService) SendMessages(ctx context.Context, r *SendMessagesRequest) (*Response, error) {
-	req, err := s.client.newRequest(http.MethodPost, messagingMessagesSendPath, r)
+	req, err := s.client.http.newRequest(http.MethodPost, messagingMessagesSendPath, r)
 	if err != nil {
 		return nil, err
 	}
 
 	var res Response
-	if err := s.client.do(ctx, req, &res); err != nil {
+	if err := s.client.http.do(ctx, req, &res); err != nil {
 		return nil, err
 	}
 
@@ -53,13 +53,13 @@ func (s *MessagingService) SendMessages(ctx context.Context, r *SendMessagesRequ
 }
 
 func (s *MessagingService) TriggerCampaign(ctx context.Context, r *TriggerCampaignRequest) (*Response, error) {
-	req, err := s.client.newRequest(http.MethodPost, messagingCampaignsTriggerSendPath, r)
+	req, err := s.client.http.newRequest(http.MethodPost, messagingCampaignsTriggerSendPath, r)
 	if err != nil {
 		return nil, err
 	}
 
 	var res Response
-	if err := s.client.do(ctx, req, &res); err != nil {
+	if err := s.client.http.do(ctx, req, &res); err != nil {
 		return nil, err
 	}
 

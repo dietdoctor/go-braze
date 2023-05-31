@@ -202,13 +202,13 @@ type UserEvent struct {
 type UserPurchase struct{}
 
 func (s *UsersService) Track(ctx context.Context, r *UsersTrackRequest) (*Response, error) {
-	req, err := s.client.newRequest(http.MethodPost, usersTrackPath, r)
+	req, err := s.client.http.newRequest(http.MethodPost, usersTrackPath, r)
 	if err != nil {
 		return nil, err
 	}
 
 	var res Response
-	if err := s.client.do(ctx, req, &res); err != nil {
+	if err := s.client.http.do(ctx, req, &res); err != nil {
 		return nil, err
 	}
 
@@ -216,13 +216,13 @@ func (s *UsersService) Track(ctx context.Context, r *UsersTrackRequest) (*Respon
 }
 
 func (s *UsersService) Delete(ctx context.Context, r *UsersDeleteRequest) (*Response, error) {
-	req, err := s.client.newRequest(http.MethodPost, usersDeletePath, r)
+	req, err := s.client.http.newRequest(http.MethodPost, usersDeletePath, r)
 	if err != nil {
 		return nil, err
 	}
 
 	var res Response
-	if err := s.client.do(ctx, req, &res); err != nil {
+	if err := s.client.http.do(ctx, req, &res); err != nil {
 		return nil, err
 	}
 

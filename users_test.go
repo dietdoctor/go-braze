@@ -49,7 +49,7 @@ func TestUsersServiceTrack(t *testing.T) {
 		}),
 	)
 
-	resp, err := client.Users.Track(context.Background(), &braze.UsersTrackRequest{
+	resp, err := client.Users().Track(context.Background(), &braze.UsersTrackRequest{
 		Attributes: []*braze.UserAttributes{
 			attr,
 			// This is expected to return a minor error.
@@ -79,7 +79,7 @@ func TestUsersServiceTrackInternalServerError(t *testing.T) {
 	client, err := braze.NewClient(braze.APIKey("key"), braze.BaseURL(url))
 	assert.NoError(t, err)
 
-	resp, err := client.Users.Track(context.Background(), nil)
+	resp, err := client.Users().Track(context.Background(), nil)
 	assert.Error(t, err)
 	assert.Nil(t, resp)
 }
@@ -106,7 +106,7 @@ func TestUsersServiceTrackCustomAttributes(t *testing.T) {
 	}
 	attr.AddAttributes(braze.BoolAttribute("testing", true))
 
-	resp, err := client.Users.Track(context.Background(), &braze.UsersTrackRequest{
+	resp, err := client.Users().Track(context.Background(), &braze.UsersTrackRequest{
 		Attributes: []*braze.UserAttributes{attr},
 	})
 	assert.NoError(t, err)
