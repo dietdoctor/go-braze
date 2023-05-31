@@ -18,44 +18,74 @@ const (
 
 // Braze defines the Braze REST API client interface.
 type Braze interface {
-	UsersEndpoint
+	Users() UsersEndpoint
+	Messaging() MessagingEndpoint
+	PreferenceCenter() PreferenceCenterEndpoint
 }
 
 // Client implements Braze REST API client.
 type Client struct {
-	baseURL    *url.URL
-	apiKey     string
-	userAgent  string
-	httpClient *http.Client
-
 	// TODO
 	// Export ExportService
 	// Email EmailService
 	// Subscription SubscriptionService
 	// Templates    TemplatesService
 
-	Messaging        MessagingEndpoint
-	Users            UsersEndpoint
-	PreferenceCenter PreferenceCenterEndpoint
+	http *httpClient
+
+	messaging        MessagingEndpoint
+	users            UsersEndpoint
+	preferenceCenter PreferenceCenterEndpoint
+}
+
+type httpClient struct {
+	baseURL    *url.URL
+	apiKey     string
+	userAgent  string
+	httpClient *http.Client
+}
+
+func (c *Client) Users() UsersEndpoint {
+	return c.users
+}
+
+func (c *Client) Messaging() MessagingEndpoint {
+	return c.messaging
+}
+
+func (c *Client) PreferenceCenter() PreferenceCenterEndpoint {
+	return c.preferenceCenter
 }
 
 // NewClient sets up a new Braze client.
 func NewClient(opts ...ClientOption) (*Client, error) {
 	baseURL, _ := url.Parse(defaultBaseURL)
 
-	c := &Client{
+	httpClient := &httpClient{
 		baseURL: baseURL,
 		httpClient: &http.Client{
 			Timeout: time.Second * 10,
 		},
 	}
+
+	c := &Client{
+		http: httpClient,
+	}
 	if err := c.applyOptions(opts...); err != nil {
 		return nil, err
 	}
 
-	c.Users = &UsersService{client: c}
-	c.Messaging = &MessagingService{client: c}
-	c.PreferenceCenter = &PreferenceCenterService{client: c}
+	c.users = &UsersService{
+		client: c,
+	}
+
+	c.messaging = &MessagingService{
+		client: c,
+	}
+
+	c.preferenceCenter = &PreferenceCenterService{
+		client: c,
+	}
 
 	return c, nil
 }
@@ -66,7 +96,7 @@ type ClientOption func(*Client) error
 // BaseURL allows to change the default API base url.
 func BaseURL(u *url.URL) ClientOption {
 	return func(c *Client) error {
-		c.baseURL = u
+		c.http.baseURL = u
 		return nil
 	}
 }
@@ -74,7 +104,7 @@ func BaseURL(u *url.URL) ClientOption {
 // APIKey is a functional option for configuring api access key.
 func APIKey(k string) ClientOption {
 	return func(c *Client) error {
-		c.apiKey = k
+		c.http.apiKey = k
 		return nil
 	}
 }
@@ -82,7 +112,7 @@ func APIKey(k string) ClientOption {
 // UserAgent is a functional option for configuring client user agent.
 func UserAgent(a string) ClientOption {
 	return func(c *Client) error {
-		c.userAgent = a
+		c.http.userAgent = a
 		return nil
 	}
 }
@@ -90,7 +120,7 @@ func UserAgent(a string) ClientOption {
 // HTTPClient is a functional option for configuring http client.
 func HTTPClient(h *http.Client) ClientOption {
 	return func(c *Client) error {
-		c.httpClient = h
+		c.http.httpClient = h
 		return nil
 	}
 }
@@ -104,7 +134,7 @@ func (c *Client) applyOptions(opts ...ClientOption) error {
 	return nil
 }
 
-func (c *Client) newRequest(method string, path string, body interface{}) (*http.Request, error) {
+func (c *httpClient) newRequest(method string, path string, body interface{}) (*http.Request, error) {
 	u := c.baseURL.ResolveReference(&url.URL{Path: path})
 
 	var b []byte
@@ -129,26 +159,12 @@ func (c *Client) newRequest(method string, path string, body interface{}) (*http
 	return req, nil
 }
 
-func (c *Client) do(ctx context.Context, req *http.Request, v interface{}) error {
-	// TODO remove
-	// reqDump, err := httputil.DumpRequest(req, true)
-	// if err != nil {
-	// 	panic(err)
-	// }
-	// fmt.Printf("%s\n", reqDump)
-
+func (c *httpClient) do(ctx context.Context, req *http.Request, v interface{}) error {
 	resp, err := c.httpClient.Do(req.WithContext(ctx))
 	if err != nil {
 		return err
 	}
 	defer resp.Body.Close()
-
-	// TODO remove
-	// respDump, err := httputil.DumpResponse(resp, true)
-	// if err != nil {
-	// 	panic(err)
-	// }
-	// fmt.Printf("%s\n", respDump)
 
 	if err := parseError(resp); err != nil {
 		return err

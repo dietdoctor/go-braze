@@ -28,7 +28,7 @@ func TestPreferencesServerCreateURL(t *testing.T) {
 	client, err := braze.NewClient(braze.APIKey("key"), braze.BaseURL(url))
 	assert.NoError(t, err)
 
-	resp, err := client.PreferenceCenter.CreateURL(context.Background(), &braze.PreferenceCenterCreateURLRequest{
+	resp, err := client.PreferenceCenter().CreateURL(context.Background(), &braze.PreferenceCenterCreateURLRequest{
 		PreferenceCenterID: "foo",
 		UserID:             "bar",
 	})
@@ -52,7 +52,7 @@ func TestPreferencesServerCreateURLInternalServerError(t *testing.T) {
 	client, err := braze.NewClient(braze.APIKey("key"), braze.BaseURL(url))
 	assert.NoError(t, err)
 
-	resp, err := client.PreferenceCenter.CreateURL(context.Background(), nil)
+	resp, err := client.PreferenceCenter().CreateURL(context.Background(), nil)
 	assert.Error(t, err)
 	assert.Nil(t, resp)
 }
