@@ -13,6 +13,7 @@ const (
 	usersCreateAliasPath = "/users/alias/new"
 	usersDeletePath      = "/users/delete"
 	usersIdentifyPath    = "/users/identify"
+	usersMergePath       = "/users/merge"
 )
 
 var (
@@ -33,6 +34,7 @@ type UsersEndpoint interface {
 	Delete(ctx context.Context, r *UsersDeleteRequest) (*Response, error)
 	Identify(ctx context.Context, r *UsersIdentifyRequest) (*Response, error)
 	CreateAlias(ctx context.Context, r *UsersCreateAliasRequest) (*Response, error)
+	Merge(ctx context.Context, r *UsersMergeRequest) (*Response, error)
 }
 
 type (
@@ -59,6 +61,10 @@ type UsersDeleteRequest struct {
 type UsersIdentifyRequest struct{}
 
 type UsersCreateAliasRequest struct{}
+
+type UsersMergeRequest struct {
+	MergeUpdates []*UsersMergeUpdates `json:"merge_updates,omitempty"`
+}
 
 // https://www.braze.com/docs/api/objects_filters/user_attributes_object/
 type UserAttributes struct {
@@ -201,6 +207,21 @@ type UserEvent struct {
 // TODO
 type UserPurchase struct{}
 
+type UsersMergeUpdates struct {
+	IdentifierToMerge *UsersIdentifierToMerge `json:"identifier_to_merge,omitempty"`
+	IdentifierToKeep  *UsersIdentifierToKeep  `json:"identifier_to_keep,omitempty"`
+}
+
+// Note: Braze supports more options for merging. See https://www.braze.com/docs/api/endpoints/user_data/post_users_merge/#request-parameters for more details. Update this structure if needed.
+type UsersIdentifierToMerge struct {
+	ExternalID *string `json:"external_id,omitempty"`
+}
+
+// Note: Braze supports more options for keeping. See https://www.braze.com/docs/api/endpoints/user_data/post_users_merge/#request-parameters for more details. Update this structure if needed.
+type UsersIdentifierToKeep struct {
+	ExternalID *string `json:"external_id,omitempty"`
+}
+
 func (s *UsersService) Track(ctx context.Context, r *UsersTrackRequest) (*Response, error) {
 	req, err := s.client.http.newRequest(http.MethodPost, usersTrackPath, r)
 	if err != nil {
@@ -235,4 +256,18 @@ func (s *UsersService) Identify(ctx context.Context, r *UsersIdentifyRequest) (*
 
 func (s *UsersService) CreateAlias(ctx context.Context, r *UsersCreateAliasRequest) (*Response, error) {
 	panic(errors.New("not implemented"))
+}
+
+func (s *UsersService) Merge(ctx context.Context, r *UsersMergeRequest) (*Response, error) {
+	req, err := s.client.http.newRequest(http.MethodPost, usersMergePath, r)
+	if err != nil {
+		return nil, err
+	}
+
+	var res Response
+	if err := s.client.http.do(ctx, req, &res); err != nil {
+		return nil, err
+	}
+
+	return &res, nil
 }
