@@ -141,3 +141,13 @@ func TestUsersServiceTrackGenericCustomAttributes(t *testing.T) {
 	assert.NoError(t, err)
 	assert.NotNil(t, resp)
 }
+
+func TestUsersGetCustomAttributes(t *testing.T) {
+	attr := &braze.UserAttributes{
+		ExternalID: braze.String("123"),
+	}
+	attr.AddAttributes(braze.Attribute("testing", true))
+
+	expected := map[string]any{"testing": true}
+	assert.Equal(t, expected, attr.GetCustomAttributes())
+}

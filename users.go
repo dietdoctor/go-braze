@@ -124,6 +124,8 @@ type UserAttributes struct {
 
 func (ua *UserAttributes) AddAttributes(attrs ...CustomAttribute) {
 	ua.mu.Lock()
+	defer ua.mu.Unlock()
+
 	if ua.customAttributes == nil {
 		ua.customAttributes = make(map[string]any, len(attrs))
 	}
@@ -131,7 +133,18 @@ func (ua *UserAttributes) AddAttributes(attrs ...CustomAttribute) {
 	for _, a := range attrs {
 		ua.customAttributes[a.key] = a.value
 	}
-	ua.mu.Unlock()
+}
+
+func (ua *UserAttributes) GetCustomAttributes() map[string]any {
+	ua.mu.Lock()
+	defer ua.mu.Unlock()
+
+	copy := make(map[string]any, len(ua.customAttributes))
+	for k, v := range ua.customAttributes {
+		copy[k] = v
+	}
+
+	return copy
 }
 
 // Marshall twice basically. First to get a map and then add custom attributes and marshal again.
