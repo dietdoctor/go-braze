@@ -179,8 +179,8 @@ type EmailMessage struct {
 	PreHeader          *string                   `json:"preheader,omitempty"`
 	EmailTemplateID    *string                   `json:"email_template_id,omitempty"`
 	MessageVariationID *string                   `json:"message_variation_id,omitempty"`
-	Extras             map[string]interface{}    `json:"extras,omitempty"`
-	Headers            map[string]interface{}    `json:"headers,omitempty"`
+	Extras             map[string]any            `json:"extras,omitempty"`
+	Headers            map[string]any            `json:"headers,omitempty"`
 	ShouldInlineCSS    *bool                     `json:"should_inline_css,omitempty"`
 	Attachments        []*EmailMessageAttachment `json:"attachments,omitempty"`
 }
@@ -191,18 +191,18 @@ type EmailMessageAttachment struct {
 }
 
 type TriggerCampaignRequest struct {
-	CampaignID        string                 `json:"campaign_id,omitempty"`
-	SendID            *string                `json:"send_id,omitempty"`
-	TriggerProperties map[string]interface{} `json:"trigger_properties,omitempty"`
-	Broadcast         *bool                  `json:"broadcast,omitempty"`
-	Recipients        []*Recipient           `json:"recipients,omitempty"`
+	CampaignID        string         `json:"campaign_id,omitempty"`
+	SendID            *string        `json:"send_id,omitempty"`
+	TriggerProperties map[string]any `json:"trigger_properties,omitempty"`
+	Broadcast         *bool          `json:"broadcast,omitempty"`
+	Recipients        []*Recipient   `json:"recipients,omitempty"`
 	// Audience TODO
 }
 
 type Recipient struct {
-	UserAlias             *UserAlias             `json:"user_alias,omitempty"`
-	ExternalUserID        *string                `json:"external_user_id,omitempty"`
-	TriggerProperties     map[string]interface{} `json:"trigger_properties,omitempty"`
-	CanvasEntryProperties map[string]interface{} `json:"canvas_entry_properties,omitempty"`
-	SendToExistingOnly    *bool                  `json:"send_to_existing_only,omitempty"`
+	UserAlias             *UserAlias     `json:"user_alias,omitempty"`
+	ExternalUserID        *string        `json:"external_user_id,omitempty"`
+	TriggerProperties     map[string]any `json:"trigger_properties,omitempty"`
+	CanvasEntryProperties map[string]any `json:"canvas_entry_properties,omitempty"`
+	SendToExistingOnly    *bool          `json:"send_to_existing_only,omitempty"`
 }

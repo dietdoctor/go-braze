@@ -134,7 +134,7 @@ func (c *Client) applyOptions(opts ...ClientOption) error {
 	return nil
 }
 
-func (c *httpClient) newRequest(method string, path string, body interface{}) (*http.Request, error) {
+func (c *httpClient) newRequest(method string, path string, body any) (*http.Request, error) {
 	u := c.baseURL.ResolveReference(&url.URL{Path: path})
 
 	var b []byte
@@ -159,7 +159,7 @@ func (c *httpClient) newRequest(method string, path string, body interface{}) (*
 	return req, nil
 }
 
-func (c *httpClient) do(ctx context.Context, req *http.Request, v interface{}) error {
+func (c *httpClient) do(ctx context.Context, req *http.Request, v any) error {
 	resp, err := c.httpClient.Do(req.WithContext(ctx))
 	if err != nil {
 		return err

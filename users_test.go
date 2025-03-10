@@ -2,7 +2,7 @@ package braze_test
 
 import (
 	"context"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"net/http/httptest"
 	"net/url"
@@ -87,7 +87,7 @@ func TestUsersServiceTrackInternalServerError(t *testing.T) {
 func TestUsersServiceTrackCustomAttributes(t *testing.T) {
 	mux := http.NewServeMux()
 	mux.HandleFunc("/users/track", func(w http.ResponseWriter, r *http.Request) {
-		b, _ := ioutil.ReadAll(r.Body)
+		b, _ := io.ReadAll(r.Body)
 		assert.Equal(t, []byte(`{"attributes":[{"external_id":"123","testing":true}]}`), b)
 
 		w.WriteHeader(http.StatusCreated)
@@ -105,6 +105,35 @@ func TestUsersServiceTrackCustomAttributes(t *testing.T) {
 		ExternalID: braze.String("123"),
 	}
 	attr.AddAttributes(braze.BoolAttribute("testing", true))
+
+	resp, err := client.Users().Track(context.Background(), &braze.UsersTrackRequest{
+		Attributes: []*braze.UserAttributes{attr},
+	})
+	assert.NoError(t, err)
+	assert.NotNil(t, resp)
+}
+
+func TestUsersServiceTrackGenericCustomAttributes(t *testing.T) {
+	mux := http.NewServeMux()
+	mux.HandleFunc("/users/track", func(w http.ResponseWriter, r *http.Request) {
+		b, _ := io.ReadAll(r.Body)
+		assert.Equal(t, []byte(`{"attributes":[{"external_id":"123","testing":true}]}`), b)
+
+		w.WriteHeader(http.StatusCreated)
+		w.Write([]byte(`{}`))
+	})
+
+	srv := httptest.NewServer(mux)
+	defer srv.Close()
+
+	url, _ := url.Parse(srv.URL)
+	client, err := braze.NewClient(braze.APIKey("key"), braze.BaseURL(url))
+	assert.NoError(t, err)
+
+	attr := &braze.UserAttributes{
+		ExternalID: braze.String("123"),
+	}
+	attr.AddAttributes(braze.Attribute("testing", true))
 
 	resp, err := client.Users().Track(context.Background(), &braze.UsersTrackRequest{
 		Attributes: []*braze.UserAttributes{attr},
