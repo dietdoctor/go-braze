@@ -119,13 +119,13 @@ type UserAttributes struct {
 	Twitter *AttributeTwitter `json:"twitter,omitempty"`
 
 	mu               sync.Mutex
-	customAttributes map[string]interface{}
+	customAttributes map[string]any
 }
 
 func (ua *UserAttributes) AddAttributes(attrs ...CustomAttribute) {
 	ua.mu.Lock()
 	if ua.customAttributes == nil {
-		ua.customAttributes = make(map[string]interface{}, len(attrs))
+		ua.customAttributes = make(map[string]any, len(attrs))
 	}
 
 	for _, a := range attrs {
@@ -145,7 +145,7 @@ func (attributes *UserAttributes) MarshalJSON() ([]byte, error) {
 		return nil, err
 	}
 
-	m := map[string]interface{}{}
+	m := map[string]any{}
 	if err := json.Unmarshal(d, &m); err != nil {
 		return nil, err
 	}
@@ -197,7 +197,7 @@ type UserEvent struct {
 	Time string `json:"time"`
 
 	// https://www.braze.com/docs/api/objects_filters/event_object/#event-properties-object
-	Properties map[string]interface{} `json:"properties,omitempty"`
+	Properties map[string]any `json:"properties,omitempty"`
 
 	// Setting this flag to true will put the API in "Update Only" mode.
 	// When using a "user_alias", "Update Only" mode is always true.
