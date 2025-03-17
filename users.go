@@ -79,7 +79,7 @@ type UserAttributes struct {
 	ExternalID         *string    `json:"external_id,omitempty"`
 	UserAlias          *UserAlias `json:"user_alias,omitempty"`
 	BrazeID            *string    `json:"braze_id,omitempty"`
-	UpdateExistingOnly *bool      `json:"update_existing_only,omitempty"`
+	UpdateExistingOnly *bool      `json:"_update_existing_only,omitempty"`
 	PushTokenImport    *bool      `json:"push_token_import,omitempty"`
 	FirstName          *string    `json:"first_name,omitempty"`
 	LastName           *string    `json:"last_name,omitempty"`
@@ -208,7 +208,7 @@ type UserEvent struct {
 
 	// Setting this flag to true will put the API in "Update Only" mode.
 	// When using a "user_alias", "Update Only" mode is always true.
-	UpdateExistingOnly *bool `json:"update_existing_only,omitempty"`
+	UpdateExistingOnly *bool `json:"_update_existing_only,omitempty"`
 }
 
 // TODO
