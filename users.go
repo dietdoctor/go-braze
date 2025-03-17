@@ -14,6 +14,7 @@ const (
 	usersDeletePath      = "/users/delete"
 	usersIdentifyPath    = "/users/identify"
 	usersMergePath       = "/users/merge"
+	usersExportIdsPath   = "/users/export/ids"
 )
 
 var (
@@ -35,6 +36,7 @@ type UsersEndpoint interface {
 	Identify(ctx context.Context, r *UsersIdentifyRequest) (*Response, error)
 	CreateAlias(ctx context.Context, r *UsersCreateAliasRequest) (*Response, error)
 	Merge(ctx context.Context, r *UsersMergeRequest) (*Response, error)
+	ExportIds(ctx context.Context, r *UsersExportIdsRequest) (*UserExportResponse, error)
 }
 
 type (
@@ -64,6 +66,11 @@ type UsersCreateAliasRequest struct{}
 
 type UsersMergeRequest struct {
 	MergeUpdates []*UsersMergeUpdates `json:"merge_updates,omitempty"`
+}
+
+type UsersExportIdsRequest struct {
+	ExternalIDs    []string `json:"external_ids,omitempty"`
+	FieldsToExport []string `json:"fields_to_export,omitempty"`
 }
 
 // https://www.braze.com/docs/api/objects_filters/user_attributes_object/
@@ -265,6 +272,20 @@ func (s *UsersService) Merge(ctx context.Context, r *UsersMergeRequest) (*Respon
 	}
 
 	var res Response
+	if err := s.client.http.do(ctx, req, &res); err != nil {
+		return nil, err
+	}
+
+	return &res, nil
+}
+
+func (s *UsersService) ExportIds(ctx context.Context, r *UsersExportIdsRequest) (*UserExportResponse, error) {
+	req, err := s.client.http.newRequest(http.MethodPost, usersExportIdsPath, r)
+	if err != nil {
+		return nil, err
+	}
+
+	var res UserExportResponse
 	if err := s.client.http.do(ctx, req, &res); err != nil {
 		return nil, err
 	}
