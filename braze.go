@@ -232,6 +232,16 @@ type Error struct {
 	Index      int    `json:"index,omitempty"`
 }
 
+type ExportedUser struct {
+	ExternalID string `json:"external_id,omitempty"`
+}
+
+type UserExportResponse struct {
+	Message        string         `json:"message,omitempty"`
+	Users          []ExportedUser `json:"users,omitempty"`
+	InvalidUserIds []string       `json:"invalid_user_ids,omitempty"`
+}
+
 // Bool is a helper routine that allocates a new bool value
 // to store v and returns a pointer to it.
 func Bool(v bool) *bool { return &v }
